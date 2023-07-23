@@ -1,0 +1,279 @@
+<html>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+<body onload='init()'>
+<h1>Buy and Hold vs. Active Trading</h1>
+<p>Compare buy and hold with active trading based on crossover moving average strategy</p>
+<p>Is buy and hold truly the best strategy for the average investor?</p>  
+    An investor can purchase Amazon (AMZN, in dark blue) at the start of the horizon, 
+    7/14/2022 and hold the stock for one year.
+    Or based on the crossing of 5-day moving average
+    (red line) over the 15-day moving average (light blue) can buy or sell when the 5-day
+    moving average crosses over or below the longer term moving day average.
+</p>
+<p> <button type = 'button' onclick="window.location.href='//john42379.github.io/JohnMCS416/ActiveTrading.html'">ActiveTrading</button>
+    <button type = 'button' onclick="window.location.href='///C:/Users/john4/OneDrive/Desktop/PythonTestScripts/BuyAndHold.html'">PassiveTrading</button>
+</p>
+
+
+<svg width=1200 height=600></svg>
+<div id = "tooltip"></div>
+<script>
+async function init() {
+    const data = await d3.csv('https://john42379.github.io/JohnMCS416/AMZN.csv',
+    function(d) {return {   Date: d3.timeParse("%m/%d/%Y")(d.Date),
+                            Open: +d.Open,
+                            High: +d.High,
+                            Low: +d.Low,
+                            Close: +d.Close,
+                            Volume: +d.Volume,
+                            FiveMVA: +d.FiveMVA,
+                            FifteenMVA: +d.FIfteenMVA,
+                            Signal: d.Signal,
+                            ActiveValue: +d.ActiveValue,
+                            ActiveReteurn: +d.ActiveReturn,
+                            PassiveValue: +d.PassiveValue,
+                            PassiveReturn: +d.PassiveReturn
+                        }
+                    });
+   //console.log(data) ;
+
+    var x = d3.scaleTime().domain(d3.extent(data, function(d) {return d.Date;})).range([0,1000]);
+    var y = d3.scaleLinear().domain(d3.extent(data, (d) => +d.Close)).range([400,0]);
+
+    var tooltip = d3.select('#tooltip')
+                    .style("opacity", 0)
+                    .style('position', 'absolute')
+                    .attr("class", "tooltip")
+                    .style("background-color", "white")
+                    .style("border", "solid")
+                    .style("border-width", "2px")
+                    .style("border-radius", "5px")
+                    .style("padding", "5px");
+
+    // Three function that change the tooltip when user hover / move / leave a cell
+    var mouseover = function(d) {
+        tooltip
+            .style("opacity", 1)
+    }
+  
+    //var mousemove = function(d) {
+    //    tooltip
+    //        .html("The close price is: " + d.Close)
+    //        .style("left", (d3.mouse(this)[0]+90) + "px")
+    //        .style("top", (d3.mouse(this)[1]) + "px")
+    //}
+    //var mousemove = (event, d) => {
+    //    const [x,y] = d3.pointer(event, document.body);
+    //    return tooltip.style('top', (y+0)+'px').style('left', (x+100) + 'px');
+    //}
+    
+    var mouseleave = function(d) {
+        tooltip
+            .transition()
+            .duration(800)
+            .style("opacity", 0)
+    }
+
+    //const parse1 =  d3.timeParse("%m/%d/%Y")
+    //console.log(parse1(d.Date));
+    d3.select('svg').append('g').attr('transform', 'translate(50,50)')
+                    .selectAll('circle').data(data).enter().append('circle')
+                    .attr('stroke', 'Navy')
+                    .attr('cx', function(d) {return x(d.Date);})
+                    .attr('cy', function(d) {return y(d.Close);})
+                    .attr('r', 2)
+                    .on('mouseover', mouseover)
+                    .on("mousemove", function(d){
+                        tooltip
+                            .style("left", (event.pageX+25) + "px")
+                            .style("top", (event.pageY) + "px")
+                            .html('Date: ' + d.Date + '<br/>' + 'Close: ' + d.Close +'<br/>' + '5-day Moving Avg: ' + d.FiveMVA +'<br/>' + '15-day Moving Avg: ' + d.FifteenMVA )})                                
+                                .on('mouseleave', mouseleave);
+
+    d3.select("svg").append('g').attr('transform', 'translate(50,50)').append('path')
+                                .datum(data).attr('fill','none')
+                                .attr('stroke','Navy').attr('stroke-width',1)
+                                .attr('d',d3.line().x(function(d) { return x(d.Date)})
+                                                   .y(function(d) { return y(d.Close)}));
+
+
+    d3.select("svg").append('g').attr('transform', 'translate(50,50)').append('path')
+                                .datum(data).attr('fill','none')
+                                .attr('stroke','LightCoral').attr('stroke-width',2.5)
+                                //.attr('d',d3.line().x(50)
+                                //                   .y(450))
+                                //.transition().duration(3000)
+                                .attr('d',d3.line().x(function(d) { return x(d.Date)})
+                                                   .y(function(d) { return y(d.FiveMVA)})
+                                                   .defined(function(d) {return d.FiveMVA}));
+                                
+
+    d3.select("svg").append('g').attr('transform', 'translate(50,50)').append('path')
+                                .datum(data).attr('fill','none')
+                                .attr('stroke','LightSkyBlue').attr('stroke-width',2.5)
+                                //.transition().duration(3000).delay(1000)
+                                .attr('d',d3.line().x(function(d) { return x(d.Date)})
+                                                   .y(function(d) { return y(d.FifteenMVA)})
+                                                   .defined(function(d) {return d.FifteenMVA}));
+                                
+    
+
+    d3.select("svg").append('g').attr('transform', 'translate(50, 450)')
+                                .call(d3.axisBottom(x).tickFormat(d3.timeFormat('%x')));
+                    
+    d3.select("svg").append('g').attr('transform', 'translate(50,50)')
+                                .call(d3.axisLeft(y));
+    
+    
+    
+    const type = d3.annotationLabel
+    const annotations = [
+        { note: { label: "Buy" },
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "9/13/2022", Close: 130.9937}, //position of the subject "data point"
+            dy: -50, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Sell" },
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "9/19/2022", Close: 128.5523}, //position of the subject "data point"
+            dy: -40, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Buy" },
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "10/7/2022", Close: 118.242}, //position of the subject "data point"
+            dy: -50, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Sell" },//Adjust the connector and move circle up
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "10/13/2022", Close: 116}, //position of the subject "data point"
+            dy: 50, //postions of the note
+            dx: -100
+        },
+        { note: { label: "Buy" },
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "10/24/2022", Close: 115.6717}, //position of the subject "data point"
+            dy: -50, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Sell" },//move circle up
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "11/1/2022", Close: 114}, //position of the subject "data point"
+            dy: 50, //postions of the note
+            dx: -100
+        },
+        { note: { label: "Buy" },//Note #7
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "11/17/2022", Close: 96.25}, //position of the subject "data point"
+            dy: -50, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Sell" },
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "11/25/2022", Close: 93.80067}, //position of the subject "data point"
+            dy: -50, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Buy" }, //Note #9
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "1/10/2023", Close: 85.23}, //position of the subject "data point"
+            dy: -10, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Sell" }, //Note #10 adjust close
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "2/11/2023", Close: 101.1}, //position of the subject "data point"
+            dy: -50, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Buy" }, //Note #11 adjust close
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "3/17/2023", Close: 93.8}, //position of the subject "data point"
+            dy: 50, //postions of the note
+            dx: 75
+        },
+        { note: { label: "Sell" }, //Note #12
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "4/18/2023", Close: 101.137}, //position of the subject "data point"
+            dy: 75, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Buy" }, //Note #13
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "4/19/2023", Close: 101.517}, //position of the subject "data point"
+            dy: 50, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Sell" },
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "5/5/2023", Close: 104.044}, //position of the subject "data point"
+            dy: 50, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Buy" },
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 10 },
+            color: ['black'],
+            data: {Date: "5/10/2023", Close: 105.094}, //position of the subject "data point"
+            dy: 50, //postions of the note
+            dx: 150
+        },
+        
+
+        
+
+
+    ]
+    
+    const parseTime = d3.timeParse("%m/%d/%Y")
+    const timeFormat = d3.timeFormat("%m/%d/%Y")
+    const makeAnnotations = d3.annotation()
+        .type(type)
+        .accessors({
+            x: d => x(parseTime(d.Date)),
+            y: d => y(d.Close)
+        })
+        .accessorsInverse({
+            date: d => timeFormat(x.invert(d.x)),
+            close: d => y.invert(d.y)
+        })
+        .annotations(annotations)
+    d3.select("svg")
+        .append("g").attr('transform', 'translate(50,50)')
+        .call(makeAnnotations)
+    
+}
+</script>
+</body>
+</html>       
