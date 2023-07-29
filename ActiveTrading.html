@@ -61,7 +61,127 @@ async function init() {
             data: {Date: "7/13/2023", ActiveValue: 108601.25}, //position of the subject "data point"
             dy: 20, //postions of the note
             dx: -100
-        }]
+        },
+            { note: { label: "Buy" }, //#1
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "9/13/2022", ActiveValue: 100000}, //position of the subject "data point"
+            dy: -50, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Sell" },
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "9/19/2022", ActiveValue: 98296.80}, //position of the subject "data point"
+            dy: -40, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Buy" },//#3
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "10/7/2022", ActiveValue: 98296.80}, //position of the subject "data point"
+            dy: -20, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Sell" },//Adjust the connector and move circle up
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "10/13/2022", ActiveValue: 96554.99}, //position of the subject "data point"
+            dy: 50, //postions of the note
+            dx: -100
+        },
+        { note: { label: "Buy" }, //#5
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "10/24/2022", ActiveValue: 96554.99}, //position of the subject "data point"
+            dy: 50, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Sell" },//#6
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "11/1/2022", ActiveValue: 77996.64}, //position of the subject "data point"
+            dy: -50, //postions of the note
+            dx: -100
+        },
+        { note: { label: "Buy" },//Note #7
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "11/17/2022", ActiveValue: 77996.64}, //position of the subject "data point"
+            dy: -50, //postions of the note
+            dx: 80
+        },
+        { note: { label: "Sell" },
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "11/25/2022", ActiveValue: 76812.51}, //position of the subject "data point"
+            dy: -50, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Buy" }, //Note #9
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "1/10/2023", ActiveValue: 76812.51}, //position of the subject "data point"
+            dy: -10, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Sell" }, //Note #10 adjust close
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "2/13/2023", ActiveValue: 85077.52}, //position of the subject "data point"
+            dy: -50, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Buy" }, //Note #11 adjust close
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "3/17/2023", ActiveValue: 85077.52}, //position of the subject "data point"
+            dy: 50, //postions of the note
+            dx: 75
+        },
+        { note: { label: "Sell" }, //Note #12
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "4/18/2023", ActiveValue: 87957.87}, //position of the subject "data point"
+            dy: 75, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Buy" }, //Note #13
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "4/19/2023", ActiveValue: 87957.87}, //position of the subject "data point"
+            dy: 45, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Sell" },
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "5/5/2023", ActiveValue: 89104.78}, //position of the subject "data point"
+            dy: 50, //postions of the note
+            dx: 100
+        },
+        { note: { label: "Buy" },
+            type: d3.annotationCalloutCircle,
+            subject: { radius: 5 },
+            color: ['black'],
+            data: {Date: "5/10/2023", ActiveValue: 89104.78}, //position of the subject "data point"
+            dy: 35, //postions of the note
+            dx: 150
+        },]
     
     const parseTime = d3.timeParse("%m/%d/%Y")
     const timeFormat = d3.timeFormat("%m/%d/%Y")
